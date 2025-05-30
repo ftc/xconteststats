@@ -20,12 +20,19 @@ def getFlyingDays(files):
     return len(daySet)
 
 def getFlightsAtEachSite(files):
-    for file in files:
-        f = open(file,'r')
-        file_lines = f.read()
-        parsed = json.loads(file_lines)
-        for flight in parsed['items']:
-            print()
+    sites = {}
+    flightIds = set()
+    def toApply(flight):
+        if(flight['id'] in flightIds):
+            return # don't double count flights
+        flightIds.add(flight['id'])
+        siteName = flight['takeoff']['name']
+        if(siteName not in sites):
+            sites[siteName] = 0
+        sites[siteName] = sites[siteName] + 1
+    forEachFlight(files,toApply)
+    return sites
+
 
 
 def main():
@@ -36,9 +43,14 @@ def main():
                          -f "flights.ShawnKM.world2025.json flights.ShawnKM.world2024.json")""",
                          type=str, required=True)
     args = parser.parse_args()
+    inputFiles = args.input_file.split(' ')
     print(f"Input file: {args.input_file}")
-    print(f"Flying days: {getFlyingDays(args.input_file.split(' '))}")
+    print(f"Flying days: {getFlyingDays(inputFiles)}")
+    siteFlightCount = getFlightsAtEachSite(inputFiles)
+    print("Days at each flying site:")
+    for site in siteFlightCount:
+        print(f"  {site}:{siteFlightCount[site]}")
+
+
 if __name__ == "__main__":
-    # print(getFlightsAtEachSite(["flights.ShawnKM.world2025.json","flights.ShawnKM.world2024.json"]))
-    # print(getFlyingDays(["flights.ShawnKM.world2025.json","flights.ShawnKM.world2024.json"]))
     main()
