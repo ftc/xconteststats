@@ -47,7 +47,7 @@ def main():
     print(f"Input file: {args.input_file}")
     print(f"Flying days: {getFlyingDays(inputFiles)}")
     siteFlightCount = getFlightsAtEachSite(inputFiles)
-    print("Days at each flying site:")
+    print("Flights at each flying site:")
     for site in siteFlightCount:
         print(f"  {site}:{siteFlightCount[site]}")
 
